@@ -5,7 +5,7 @@ import pandas as pd
 import numpy as np
 
 # 1. Load preprocessed data
-df = load_and_preprocess("credit_dataset.csv")
+df = load_and_preprocess("credit_dataset.csv ")
 
 """
 print(df.info())
@@ -15,7 +15,7 @@ print(df.isnull().sum())
 """
 
 
-def find_outlters(df, columns):
+def find_outliers(df, columns):
     Q1 = df[columns].quantile(0.25)
     Q3 = df[columns].quantile(0.75)
     IQR = Q3 - Q1
@@ -77,8 +77,8 @@ numaric_cols= df.select_dtypes(include=['int64', 'float64'])
 
 # check outliers for numerical columns
 for col in numaric_cols:
-    if find_outlters(df, col) !=0:
-        print( col,find_outlters(df, col))
+    if find_outliers(df, col) !=0:
+        print( col,find_outliers(df, col))
 print ("--------------------------------------------------")
 
 # cap outliers for numerical columns
@@ -97,9 +97,9 @@ numaric_cols2= df.select_dtypes(include=['int64', 'float64'])
 # check outliers for numerical columns after capping
 count=0
 for col in numaric_cols2:
-    if find_outlters(df, col) !=0:
+    if find_outliers(df, col) !=0:
         count=+1
-        print( col,find_outlters(df, col))
+        print( col,find_outliers(df, col))
 if count==0:
     print("No outlters found")
 print ("--------------------------------------------------")
@@ -113,13 +113,7 @@ coo_matrix= numaric_cols_3.corr()
 plt.figure(figsize=(12,10))
 sns.heatmap(coo_matrix, annot=True, fmt=".2f", cmap='coolwarm', linewidths=0.5, linecolor='black', cbar=True)
 plt.title('Correlation Matrix')
-plt.show()
-
-
-
-
-
-
+# plt.show()
 
 
 # Correlation Matrix split into two stages for better readability
