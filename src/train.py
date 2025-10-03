@@ -40,3 +40,6 @@ print(df[df["anomaly"] == 1].head())
 
 print("\nSample Anomalies (Not Eligible):")
 print(df[df["anomaly"] == -1].head())
+
+eligible_df = df[df["anomaly"] == -1]
+not_eligible_df = df[df["unanomaly"] == 1]
