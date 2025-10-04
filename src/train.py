@@ -4,6 +4,8 @@ import numpy as np
 from sklearn.preprocessing import StandardScaler
 from sklearn.ensemble import IsolationForest
 import matplotlib.pyplot as plt
+import seaborn as sns
+
 
 # 1. Load preprocessed data
 df = load_and_preprocess("credit_dataset.csv")  # your preprocessed dataset
@@ -29,11 +31,6 @@ df["anomaly"] = y_pred
 print("Normal points:", list(y_pred).count(1))
 print("Anomalies:", list(y_pred).count(-1))
 
-# 7. Optional: visualize first two features (if dataset is high-dimensional, you can use PCA)
-if X.shape[1] == 2:  
-    plt.scatter(X_scaled[:, 0], X_scaled[:, 1], c=y_pred, cmap="coolwarm")
-    plt.title("Isolation Forest Anomaly Detection")
-    plt.show()
 
 print("Sample Normal Points (Eligible):")
 print(df[df["anomaly"] == 1].head())
@@ -41,5 +38,11 @@ print(df[df["anomaly"] == 1].head())
 print("\nSample Anomalies (Not Eligible):")
 print(df[df["anomaly"] == -1].head())
 
-eligible_df = df[df["anomaly"] == -1]
-not_eligible_df = df[df["unanomaly"] == 1]
+eligible_df = df[df["anomaly"] == 1]
+not_eligible_df = df[df["anomaly"] == -1]
+
+eligible_df.to_csv("eligible_applicants.csv", index=False)
+print("Eligible applicants saved to 'eligible_applicants.csv'.")
+
+not_eligible_df.to_csv("not_eligible_applicants.csv", index=False)
+print("Not eligible applicants saved to 'not_eligible_applicants.csv'.")
