@@ -46,3 +46,8 @@ print("Eligible applicants saved to 'eligible_applicants.csv'.")
 
 not_eligible_df.to_csv("not_eligible_applicants.csv", index=False)
 print("Not eligible applicants saved to 'not_eligible_applicants.csv'.")
+
+
+sns.boxenplot(x="anomaly", y="age", data=df)
+plt.title("Income Distribution: Eligible vs Not Eligible")
+plt.show()
