@@ -2,8 +2,7 @@ import pandas as pd
 from sklearn.preprocessing import LabelEncoder
 
 
-print("hello world")
-def load_data(filepath="/credit_dataset.csv"):
+def load_data(filepath="/data/credit_dataset.csv"):
     df=pd.read_csv(filepath)
     
     if 'ID' in df.columns:
@@ -35,5 +34,5 @@ def load_data(filepath="/credit_dataset.csv"):
 
 
 if __name__ == "__main__":
-    df = load_data("/credit_dataset.csv")
+    df = load_data("data/credit_dataset.csv")
     

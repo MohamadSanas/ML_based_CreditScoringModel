@@ -5,7 +5,7 @@ import pandas as pd
 import numpy as np
 
 # 1. Load preprocessed data
-df = load_data("credit_dataset.csv")
+df = load_data(filepath="/data/credit_dataset.csv")
 
 """
 print(df.info())
@@ -73,6 +73,6 @@ def eda_process(df):
     return df
 
 if __name__ == "__main__":
-    eda_process(df)
+    eda_process("/data/credit_dataset.csv")
 
 
