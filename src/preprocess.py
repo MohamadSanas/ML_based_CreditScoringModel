@@ -6,9 +6,6 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 
 
-
-
-
 def find_outliers(df, column):
     """Count number of outliers in a column using IQR method."""
     Q1 = df[column].quantile(0.25)
@@ -53,6 +50,7 @@ def preprocess(df):
 
     # Convert days to age in years
     df["age"] = (df["DAYS_BIRTH"] / 365).astype(int)
+    df['young_age_score'] = 1/(df['age']+1)
 
     # Drop irrelevant columns
     df = df.drop(
@@ -63,7 +61,7 @@ def preprocess(df):
             "FLAG_MOBIL",
             "FLAG_PHONE",
             "FLAG_EMAIL",
-            "FLAG_WORK_PHONE",
+            "FLAG_WORK_PHONE"
         ]
     )
 
@@ -111,8 +109,13 @@ def load_and_preprocess(path):
     df_new= eda_process(df)
     df_preprocessed = preprocess(df_new)
     print("Dataset shape after full preprocessing:", df_preprocessed.shape)
+    
+    df_preprocessed.dropna(inplace=True)
+    df_preprocessed.to_csv("data/preprocessed_data.csv", index=False)
+    print("Preprocessed data saved to '../data/preprocessed_data.csv'.")
+    
     return df_preprocessed
 
 
 if __name__ == "__main__":
-    df_preprocessed = load_and_preprocess("credit_dataset.csv")
+    df_preprocessed = load_and_preprocess("data/credit_dataset.csv")

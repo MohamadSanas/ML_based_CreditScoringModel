@@ -1,8 +1,10 @@
 import pandas as pd
 from sklearn.preprocessing import LabelEncoder
+import os
 
 
 def load_data(filepath="/data/credit_dataset.csv"):
+    
     df=pd.read_csv(filepath)
     
     if 'ID' in df.columns:
@@ -27,7 +29,8 @@ def load_data(filepath="/data/credit_dataset.csv"):
     
     print("data loaded and preprocessed successfully")
     print("Dataset shape after preprocessing:", df.shape)
-    print(df.head())
+    df.dropna()
+    
     
     return df
 

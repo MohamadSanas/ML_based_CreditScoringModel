@@ -5,7 +5,8 @@ import pandas as pd
 import numpy as np
 
 # 1. Load preprocessed data
-df = load_data(filepath="/data/credit_dataset.csv")
+df = load_data(filepath="data/credit_dataset.csv")
+
 
 """
 print(df.info())
@@ -14,9 +15,7 @@ print(df.shape)
 print(df.isnull().sum())
 """
 
-
 def Visualize_distribution(df, columns):
-    # 2. Visualize the distribution of a numerical column
     plt.figure(figsize=(20,12))
     plt.hist(df[columns], bins=50, color='blue', edgecolor='black')
     plt.title(f'Distribution of {columns}')
@@ -24,16 +23,13 @@ def Visualize_distribution(df, columns):
     plt.ylabel('Frequency')
     plt.show()
 
-
-def Visualize_countplot(df, columns):
-    # 3. Boxplot to identify outliers in a numerical column
+def Visualize_boxplot(df, columns):
     plt.figure(figsize=(40,6))
     sns.boxplot(x=df[columns])
     plt.title(f'Boxplot of {columns}')
     plt.show()
-    
+
 def find_outliers(df, column):
-    """Count number of outliers in a column using IQR method."""
     Q1 = df[column].quantile(0.25)
     Q3 = df[column].quantile(0.75)
     IQR = Q3 - Q1
@@ -41,38 +37,28 @@ def find_outliers(df, column):
     return len(outliers)
 
 def eda_process(df):
-    # change to num values for better visualization
-    numaric_cols= df.select_dtypes(include=['int64', 'float64'])
+    numaric_cols = df.select_dtypes(include=['int64', 'float64'])
 
-    # check outliers for numerical columns
-    for col in numaric_cols:
-        if find_outliers(df, col) !=0:
-            print( col,find_outliers(df, col))
-    print ("--------------------------------------------------")
+    for col in numaric_cols.columns:
+        outlier_count = find_outliers(df, col)
+        if outlier_count != 0:
+            print(col, outlier_count)
 
+    print("--------------------------------------------------")
 
-    # 4. Correlation heatmap for numerical features
-    coo_matrix= numaric_cols.corr()
-
+    coo_matrix = numaric_cols.corr()
     plt.figure(figsize=(12,10))
-    sns.heatmap(coo_matrix, annot=True, fmt=".2f", cmap='coolwarm', linewidths=0.5, linecolor='black', cbar=True)
-    plt.title('Correlation Matrix (actual dataset);')
+    sns.heatmap(coo_matrix, annot=True, fmt=".2f", cmap='coolwarm',
+                linewidths=0.5, linecolor='black', cbar=True)
+    plt.title('Correlation Matrix (actual dataset)')
     plt.show()
 
-
-    # Correlation Matrix split into two stages for better readability
-
-    # Stage 1: print first half of the columns
     print("=== Correlation Matrix Part 1 ===")
     print(coo_matrix.iloc[:, :len(coo_matrix)//2])
-
-    # Stage 2: print second half of the columns
     print("\n=== Correlation Matrix Part 2 ===")
     print(coo_matrix.iloc[:, len(coo_matrix)//2:])
-    
+
     return df
 
 if __name__ == "__main__":
-    eda_process("/data/credit_dataset.csv")
-
-
+    eda_process(df)
