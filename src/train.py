@@ -5,6 +5,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.ensemble import IsolationForest
 import matplotlib.pyplot as plt
 import seaborn as sns
+from joblib import dump
 
 # 1. Load preprocessed data
 df = load_and_preprocess("data/credit_dataset.csv")
@@ -35,7 +36,8 @@ y_pred = model.predict(X_scaled)
 df["anomaly"] = y_pred
 
 # 6. Apply manual rule: young_age_score(age >49) < -0.02 → mark as Not Eligible (-1)
-df.loc[df["young_age_score"] > -0.0167, "anomaly"] = -1
+mask = (df["young_age_score"] > -0.0167) & (df["anomaly"] == 1)
+df.loc[mask, "anomaly"] = np.where(np.random.rand(mask.sum()) < 1.0, -1, 1)
 
 #
 mask = (df["young_age_score"] > -0.02) & (df["anomaly"] == 1)
@@ -79,3 +81,25 @@ print("Eligible applicants saved to 'eligible_applicants.csv'.")
 
 not_eligible_df.to_csv("data/not_eligible_applicants.csv", index=False)
 print("Not eligible applicants saved to 'not_eligible_applicants.csv'.")
+
+
+'''
+# 10. Visualizations for insights
+eligible_mean = df[df["anomaly"] == 1]["FLAG_OWN_CAR"].mean()
+not_eligible_mean = df[df["anomaly"] == -1]["FLAG_OWN_CAR"].mean()
+print(f"\nAverage income (eligible): {eligible_mean:.2f}")
+print(f"Average income (not eligible): {not_eligible_mean:.2f}")
+'''
+
+
+
+
+
+# Save the trained model
+dump(model, "model/credit_eligibility_model.joblib")
+
+# Save the scaler
+dump(scaler, "model/scaler.joblib")
+
+print("Model and scaler saved successfully!")
+
