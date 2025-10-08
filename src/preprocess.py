@@ -46,36 +46,24 @@ def preprocess(df):
     """
 
     # --- Feature Engineering ---
-    df["household_size"] = df["CNT_FAM_MEMBERS"]
-
-    # Convert days to age in years
-    df["age"] = (df["DAYS_BIRTH"] / 365).astype(int)
-    df['young_age_score'] = 1/(df['age']+1)
 
     # Drop irrelevant columns
-    df = df.drop(
-        columns=[
-            "DAYS_BIRTH",
-            "CNT_FAM_MEMBERS",
-            "CNT_CHILDREN",
-            "FLAG_MOBIL",
-            "FLAG_PHONE",
-            "FLAG_EMAIL",
-            "FLAG_WORK_PHONE"
-        ]
-    )
-
     
 
     # Log transformation for income
-    df["AMT_INCOME_TOTAL_log"] = np.log1p(df["AMT_INCOME_TOTAL"])
-    df = df.drop(columns=["AMT_INCOME_TOTAL"])
-    #droping missing values
-    df = df.dropna()
+    for col in ["loan_amnt","cb_person_cred_hist_length","loan_int_rate"]:
+        df[col + '_log'] = np.log1p(df[col])
+        df.drop(columns=[col], inplace=True)
+
+    
 
     # --- Outlier capping (can be change) ---
-    for col in ["DAYS_EMPLOYED", "household_size", "AMT_INCOME_TOTAL_log"]:
+    
+    for col in ["person_age","person_income","person_emp_exp","loan_percent_income","loan_amnt_log","credit_score","cb_person_cred_hist_length_log"]:
         df = cap_outliers(df, col)
+    
+    
+    """
     
     numaric_cols= df.select_dtypes(include=['int64', 'float64'])
     coo_matrix= numaric_cols.corr()
@@ -84,7 +72,7 @@ def preprocess(df):
     plt.title('Correlation Matrix(after preprocess);')
     plt.show()
     
-    find_outliers_count(df)
+    
     
     # Correlation Matrix split into two stages for better readability
 
@@ -95,6 +83,7 @@ def preprocess(df):
     # Stage 2: print second half of the columns
     print("\n=== Correlation Matrix Part 2 ===")
     print(coo_matrix.iloc[:, len(coo_matrix)//2:])
+    """
     
     return df
 
@@ -114,8 +103,15 @@ def load_and_preprocess(path):
     df_preprocessed.to_csv("data/preprocessed_data.csv", index=False)
     print("Preprocessed data saved to '../data/preprocessed_data.csv'.")
     
+    
+    numaric_cols = df_preprocessed.select_dtypes(include=['int64', 'float64'])
+    for col in numaric_cols.columns:
+        outlier_count = find_outliers(df, col)
+        if outlier_count != 0:
+            print(col, outlier_count)
+    
     return df_preprocessed
 
 
 if __name__ == "__main__":
-    df_preprocessed = load_and_preprocess("data/credit_dataset.csv")
+    df_preprocessed = load_and_preprocess("data/loan_data.csv")

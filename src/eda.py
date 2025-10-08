@@ -38,27 +38,32 @@ def find_outliers(df, column):
 
 def eda_process(df):
     numaric_cols = df.select_dtypes(include=['int64', 'float64'])
-
+    
     for col in numaric_cols.columns:
         outlier_count = find_outliers(df, col)
         if outlier_count != 0:
             print(col, outlier_count)
+    
 
-    print("--------------------------------------------------")
-
+    print("------------------------------------------------------------------------------------------")
+    
     coo_matrix = numaric_cols.corr()
     plt.figure(figsize=(12,10))
     sns.heatmap(coo_matrix, annot=True, fmt=".2f", cmap='coolwarm',
                 linewidths=0.5, linecolor='black', cbar=True)
     plt.title('Correlation Matrix (actual dataset)')
     plt.show()
+    
+    """
 
     print("=== Correlation Matrix Part 1 ===")
     print(coo_matrix.iloc[:, :len(coo_matrix)//2])
     print("\n=== Correlation Matrix Part 2 ===")
     print(coo_matrix.iloc[:, len(coo_matrix)//2:])
-
+    """
+    
     return df
+    
 
 if __name__ == "__main__":
-    eda_process(df)
+    df= eda_process(df)
