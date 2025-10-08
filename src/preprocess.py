@@ -59,10 +59,21 @@ def preprocess(df):
 
     # --- Outlier capping (can be change) ---
     
-    for col in ["person_age","person_income","person_emp_exp","loan_percent_income","loan_amnt_log","credit_score","cb_person_cred_hist_length_log"]:
+    for col in ["person_age","person_income","person_emp_exp","loan_amnt_log","credit_score","cb_person_cred_hist_length_log"]:
         df = cap_outliers(df, col)
+        
+    df['loan_percent_income_log'] = np.log1p(df['loan_percent_income'])
     
-    
+    df['loan_percent_income_bucket'] = pd.cut(
+    df['loan_percent_income'], 
+    bins=[0, 10, 20, 30, 50, 100], 
+    labels=['Very Low','Low','Medium','High','Very High']
+    )
+    df=df.drop(columns=['loan_percent_income'], inplace=True)
+
+    df = pd.get_dummies(df, columns=['loan_percent_income_bucket'], drop_first=True)
+
+    df=df.dropna(inplace=True)
     """
     
     numaric_cols= df.select_dtypes(include=['int64', 'float64'])
@@ -103,6 +114,7 @@ def load_and_preprocess(path):
     df_preprocessed.to_csv("data/preprocessed_data.csv", index=False)
     print("Preprocessed data saved to '../data/preprocessed_data.csv'.")
     
+
     
     numaric_cols = df_preprocessed.select_dtypes(include=['int64', 'float64'])
     for col in numaric_cols.columns:
