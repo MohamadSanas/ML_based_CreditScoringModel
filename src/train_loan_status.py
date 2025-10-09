@@ -13,8 +13,6 @@ from joblib import dump, load
 # Load preprocessed data
 df = pd.read_csv("data/preprocessed_data.csv")
 
-
-
 # Separate features and target
 X = df.drop(columns=["loan_status"])
 Y = df["loan_status"]
@@ -39,7 +37,7 @@ xgb = XGBClassifier(
     random_state=42
 )
 
-# Hyperparameter tuning (RandomizedSearchCV)
+#Hyperparameter tuning (RandomizedSearchCV)
 param_grid = {
     'n_estimators': [100, 200, 300],
     'max_depth': [3, 5, 7, 10],
@@ -75,7 +73,5 @@ importances = pd.Series(best_model.feature_importances_, index=X.columns)
 importances.nlargest(15).plot(kind='barh', figsize=(10,6))
 plt.title('Top 15 Feature Importances (XGBoost)')
 plt.show()
-
-
 
 dump(best_model, 'model/credit_eligibility_model.joblib')
