@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 // Use relative import if package import fails
-import '../lib/main.dart'; 
-import '../lib/screens/form_screen.dart';
+import 'package:supermarket_delivery_app/main.dart'; 
+import 'package:supermarket_delivery_app/screens/form_screen.dart';
 
 void main() {
   testWidgets('Loan Form UI test', (WidgetTester tester) async {

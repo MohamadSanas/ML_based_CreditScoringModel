@@ -104,7 +104,7 @@ class _FormScreenState extends State<FormScreen> {
 
             // Gender dropdown
             DropdownButtonFormField<String>(
-              value: selectedGender,
+              initialValue: selectedGender,
               decoration: const InputDecoration(labelText: "Gender"),
               items: ["Male", "Female", "Other"]
                   .map((e) => DropdownMenuItem(value: e, child: Text(e)))
@@ -114,7 +114,7 @@ class _FormScreenState extends State<FormScreen> {
 
             // Previous loan
             DropdownButtonFormField<String>(
-              value: selectedPrevLoan,
+              initialValue: selectedPrevLoan,
               decoration: const InputDecoration(labelText: "Previous Loan Default"),
               items: ["Yes", "No"]
                   .map((e) => DropdownMenuItem(value: e, child: Text(e)))
@@ -124,7 +124,7 @@ class _FormScreenState extends State<FormScreen> {
 
             // Education
             DropdownButtonFormField<String>(
-              value: selectedEducation,
+              initialValue: selectedEducation,
               decoration: const InputDecoration(labelText: "Education"),
               items: [
                 "Associate",
@@ -138,7 +138,7 @@ class _FormScreenState extends State<FormScreen> {
 
             // Ownership
             DropdownButtonFormField<String>(
-              value: selectedOwnership,
+              initialValue: selectedOwnership,
               decoration: const InputDecoration(labelText: "Home Ownership"),
               items: ["MORTGAGE", "OTHER", "OWN", "RENT"]
                   .map((e) => DropdownMenuItem(value: e, child: Text(e)))
@@ -148,7 +148,7 @@ class _FormScreenState extends State<FormScreen> {
 
             // Loan Intent
             DropdownButtonFormField<String>(
-              value: selectedLoanIntent,
+              initialValue: selectedLoanIntent,
               decoration: const InputDecoration(labelText: "Loan Intent"),
               items: [
                 "DEBTCONSOLIDATION",

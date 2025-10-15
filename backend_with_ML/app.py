@@ -42,7 +42,7 @@ def predict_loan_status():
         result = 'loan approved' if pred ==1 else 'loan rejected'
         
         
-        # SHAP explainability (optional)
+        # SHAP explainability
         explainer = shap.TreeExplainer(loan_status_model)
         shap_values = explainer.shap_values(input_df)
         shap_df = pd.DataFrame({
