@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class ApiService {
-  static const String baseUrl = 'http://127.0.0.1:5000'; // Flask backend URL
+  static const String baseUrl = "http://127.0.0.1:5000"; // Flask backend URL
 
   static Future<Map<String, dynamic>> predictCreditScore(
       Map<String, dynamic> inputData) async {
