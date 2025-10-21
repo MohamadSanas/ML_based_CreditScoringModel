@@ -5,15 +5,29 @@ class ResultScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Receive the result from FormScreen
-    final result = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>? ?? {};
+    final result =
+        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>? ?? {};
 
     final loanStatus = result['loan_status']?.toString() ?? "Unknown";
-    final topFeatures = result['top_features'] as List<dynamic>? ?? [];
+
+    final topFeatures = (result['top_features'] is List)
+        ? result['top_features'] as List
+        : [];
 
     return Scaffold(
-      appBar: AppBar(title: const Text("Prediction Result")),
-      body: Padding(
+      appBar: AppBar(
+        title: const Text("Prediction Result"),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.info_outline),
+            tooltip: "About",
+            onPressed: () {
+              Navigator.pushNamed(context, '/about'); // fixed route name
+            },
+          ),
+        ],
+      ),
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Center(
           child: Column(
@@ -34,13 +48,15 @@ class ResultScreen extends StatelessWidget {
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 10),
-              // Display SHAP top features
               ...topFeatures.map((feature) {
+                final shapValue = feature['SHAP_value'];
+                final shapText =
+                    (shapValue is num) ? shapValue.toStringAsFixed(3) : shapValue.toString();
                 return Text(
-                  "${feature['Feature']}: ${feature['SHAP_value'].toStringAsFixed(3)}",
+                  "${feature['Feature']}: $shapText",
                   style: const TextStyle(fontSize: 16),
                 );
-              }).toList(),
+              }),
             ],
           ),
         ),

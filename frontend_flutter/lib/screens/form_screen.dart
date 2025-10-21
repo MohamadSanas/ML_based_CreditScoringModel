@@ -9,7 +9,7 @@ class FormScreen extends StatefulWidget {
 }
 
 class _FormScreenState extends State<FormScreen> {
-  // Text controllers for numeric inputs
+  // Controllers for numeric inputs
   final TextEditingController ageController = TextEditingController();
   final TextEditingController incomeController = TextEditingController();
   final TextEditingController expController = TextEditingController();
@@ -57,116 +57,101 @@ class _FormScreenState extends State<FormScreen> {
     }
   }
 
+  // Helper widget for TextField
+  Widget buildTextField(String label, TextEditingController controller) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: TextField(
+        controller: controller,
+        decoration: InputDecoration(labelText: label),
+        keyboardType: TextInputType.number,
+      ),
+    );
+  }
+
+  // Helper widget for Dropdown
+  Widget buildDropdown(String label, String value, List<String> items, ValueChanged<String?> onChanged) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: DropdownButtonFormField<String>(
+        value: value,
+        decoration: InputDecoration(labelText: label),
+        items: items.map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
+        onChanged: onChanged,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Loan Eligibility Form")),
+      appBar: AppBar(
+        title: const Text("Loan Eligibility Form"),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.info_outline),
+            tooltip: "About",
+            onPressed: () {
+              Navigator.pushNamed(context, '/about');
+            },
+          ),
+        ],
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            TextField(
-              controller: ageController,
-              decoration: const InputDecoration(labelText: "Age"),
-              keyboardType: TextInputType.number,
-            ),
-            TextField(
-              controller: incomeController,
-              decoration: const InputDecoration(labelText: "Annual Income"),
-              keyboardType: TextInputType.number,
-            ),
-            TextField(
-              controller: expController,
-              decoration: const InputDecoration(labelText: "Years of Experience"),
-              keyboardType: TextInputType.number,
-            ),
-            TextField(
-              controller: creditScoreController,
-              decoration: const InputDecoration(labelText: "Credit Score"),
-              keyboardType: TextInputType.number,
-            ),
-            TextField(
-              controller: loanAmountController,
-              decoration: const InputDecoration(labelText: "Loan Amount"),
-              keyboardType: TextInputType.number,
-            ),
-            TextField(
-              controller: creditHistoryController,
-              decoration: const InputDecoration(labelText: "Credit History Length"),
-              keyboardType: TextInputType.number,
-            ),
-            TextField(
-              controller: interestRateController,
-              decoration: const InputDecoration(labelText: "Loan Interest Rate"),
-              keyboardType: TextInputType.number,
-            ),
-            const SizedBox(height: 20),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Left Column
+                Expanded(
+                  child: Column(
+                    children: [
+                      buildTextField("Age", ageController),
+                      buildTextField("Annual Income", incomeController),
+                      buildTextField("Experience (yrs)", expController),
+                      buildTextField("Credit Score", creditScoreController),
+                      buildDropdown("Gender", selectedGender, ["Male", "Female", "Other"],
+                          (val) => setState(() => selectedGender = val!)),
+                      buildDropdown("Previous Loan Default", selectedPrevLoan, ["Yes", "No"],
+                          (val) => setState(() => selectedPrevLoan = val!)),
+                    ],
+                  ),
+                ),
 
-            // Gender dropdown
-            DropdownButtonFormField<String>(
-              initialValue: selectedGender,
-              decoration: const InputDecoration(labelText: "Gender"),
-              items: ["Male", "Female", "Other"]
-                  .map((e) => DropdownMenuItem(value: e, child: Text(e)))
-                  .toList(),
-              onChanged: (val) => setState(() => selectedGender = val!),
+                const SizedBox(width: 16),
+
+                // Right Column
+                Expanded(
+                  child: Column(
+                    children: [
+                      buildTextField("Loan Amount", loanAmountController),
+                      buildTextField("Credit History (yrs)", creditHistoryController),
+                      buildTextField("Interest Rate", interestRateController),
+                      buildDropdown("Education", selectedEducation, ["Associate", "Bachelor", "Doctorate", "High School", "Master"],
+                          (val) => setState(() => selectedEducation = val!)),
+                      buildDropdown("Home Ownership", selectedOwnership, ["MORTGAGE", "OTHER", "OWN", "RENT"],
+                          (val) => setState(() => selectedOwnership = val!)),
+                      buildDropdown("Loan Intent", selectedLoanIntent, ["DEBTCONSOLIDATION", "EDUCATION", "HOMEIMPROVEMENT", "MEDICAL", "PERSONAL", "VENTURE"],
+                          (val) => setState(() => selectedLoanIntent = val!)),
+                    ],
+                  ),
+                ),
+              ],
             ),
 
-            // Previous loan
-            DropdownButtonFormField<String>(
-              initialValue: selectedPrevLoan,
-              decoration: const InputDecoration(labelText: "Previous Loan Default"),
-              items: ["Yes", "No"]
-                  .map((e) => DropdownMenuItem(value: e, child: Text(e)))
-                  .toList(),
-              onChanged: (val) => setState(() => selectedPrevLoan = val!),
-            ),
+            const SizedBox(height: 24),
 
-            // Education
-            DropdownButtonFormField<String>(
-              initialValue: selectedEducation,
-              decoration: const InputDecoration(labelText: "Education"),
-              items: [
-                "Associate",
-                "Bachelor",
-                "Doctorate",
-                "High School",
-                "Master"
-              ].map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
-              onChanged: (val) => setState(() => selectedEducation = val!),
-            ),
-
-            // Ownership
-            DropdownButtonFormField<String>(
-              initialValue: selectedOwnership,
-              decoration: const InputDecoration(labelText: "Home Ownership"),
-              items: ["MORTGAGE", "OTHER", "OWN", "RENT"]
-                  .map((e) => DropdownMenuItem(value: e, child: Text(e)))
-                  .toList(),
-              onChanged: (val) => setState(() => selectedOwnership = val!),
-            ),
-
-            // Loan Intent
-            DropdownButtonFormField<String>(
-              initialValue: selectedLoanIntent,
-              decoration: const InputDecoration(labelText: "Loan Intent"),
-              items: [
-                "DEBTCONSOLIDATION",
-                "EDUCATION",
-                "HOMEIMPROVEMENT",
-                "MEDICAL",
-                "PERSONAL",
-                "VENTURE"
-              ].map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
-              onChanged: (val) => setState(() => selectedLoanIntent = val!),
-            ),
-
-            const SizedBox(height: 25),
+            // Predict Button centered
             isLoading
                 ? const CircularProgressIndicator()
-                : ElevatedButton(
-                    onPressed: _submit,
-                    child: const Text("Predict Loan Eligibility"),
+                : SizedBox(
+                    width: 220,
+                    child: ElevatedButton(
+                      onPressed: _submit,
+                      child: const Text("Predict Loan Eligibility"),
+                    ),
                   ),
           ],
         ),
