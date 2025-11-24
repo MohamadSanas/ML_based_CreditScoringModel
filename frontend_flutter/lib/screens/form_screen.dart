@@ -9,7 +9,7 @@ class FormScreen extends StatefulWidget {
 }
 
 class _FormScreenState extends State<FormScreen> {
-  // Controllers for numeric inputs
+  // Controllers
   final TextEditingController ageController = TextEditingController();
   final TextEditingController incomeController = TextEditingController();
   final TextEditingController expController = TextEditingController();
@@ -18,7 +18,7 @@ class _FormScreenState extends State<FormScreen> {
   final TextEditingController creditHistoryController = TextEditingController();
   final TextEditingController interestRateController = TextEditingController();
 
-  // Dropdown selections
+  // Dropdowns
   String selectedGender = "Male";
   String selectedPrevLoan = "No";
   String selectedEducation = "Bachelor";
@@ -28,54 +28,64 @@ class _FormScreenState extends State<FormScreen> {
   bool isLoading = false;
 
   void _submit() async {
-    setState(() => isLoading = true);
+  setState(() => isLoading = true);
 
-    final inputData = {
-      "person_age": double.tryParse(ageController.text) ?? 0,
-      "person_gender": selectedGender,
-      "person_income": double.tryParse(incomeController.text) ?? 0,
-      "person_emp_exp": double.tryParse(expController.text) ?? 0,
-      "credit_score": double.tryParse(creditScoreController.text) ?? 0,
-      "previous_loan_defaults_on_file": selectedPrevLoan,
-      "education": selectedEducation,
-      "home_ownership": selectedOwnership,
-      "loan_intent": selectedLoanIntent,
-      "loan_amnt": double.tryParse(loanAmountController.text) ?? 0,
-      "credit_history_length": double.tryParse(creditHistoryController.text) ?? 0,
-      "loan_interest_rate": double.tryParse(interestRateController.text) ?? 0,
-    };
+  final inputData = {
+        "person_age": double.tryParse(ageController.text) ?? 0,
+        "person_gender": selectedGender.trim(), // send exact string
+        "person_income": double.tryParse(incomeController.text) ?? 0,
+        "person_emp_exp": double.tryParse(expController.text) ?? 0,
+        "credit_score": double.tryParse(creditScoreController.text) ?? 0,
+        "previous_loan_defaults_on_file": selectedPrevLoan, // "Yes" or "No"
+        "education": selectedEducation.trim(),
+        "home_ownership": selectedOwnership.trim(),
+        "loan_intent": selectedLoanIntent.trim(),
+        "loan_amnt": double.tryParse(loanAmountController.text) ?? 0,
+        "credit_history_length": double.tryParse(creditHistoryController.text) ?? 0,
+        "loan_interest_rate": double.tryParse(interestRateController.text) ?? 0,
+      };
 
-    try {
-      final result = await ApiService.predictCreditScore(inputData);
-      setState(() => isLoading = false);
-      Navigator.pushNamed(context, '/result', arguments: result);
-    } catch (e) {
-      setState(() => isLoading = false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $e')),
-      );
+      try {
+        final result = await ApiService.predictCreditScore(inputData);
+        setState(() => isLoading = false);
+        Navigator.pushNamed(context, '/result', arguments: result);
+      } catch (e) {
+        setState(() => isLoading = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: $e')),
+        );
+      }
     }
-  }
 
-  // Helper widget for TextField
+
+  // TextField builder
   Widget buildTextField(String label, TextEditingController controller) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6),
       child: TextField(
         controller: controller,
-        decoration: InputDecoration(labelText: label),
+        decoration: InputDecoration(
+          labelText: label,
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        ),
         keyboardType: TextInputType.number,
       ),
     );
   }
 
-  // Helper widget for Dropdown
-  Widget buildDropdown(String label, String value, List<String> items, ValueChanged<String?> onChanged) {
+  // Dropdown builder
+  Widget buildDropdown(
+      String label, String value, List<String> items, ValueChanged<String?> onChanged) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6),
       child: DropdownButtonFormField<String>(
-        value: value,
-        decoration: InputDecoration(labelText: label),
+        initialValue: value,
+        decoration: InputDecoration(
+          labelText: label,
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+        ),
         items: items.map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
         onChanged: onChanged,
       ),
@@ -85,75 +95,149 @@ class _FormScreenState extends State<FormScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFF8F9FB),
       appBar: AppBar(
-        title: const Text("Loan Eligibility Form"),
+        title: const Text("Loan Application Form"),
+        centerTitle: true,
+        backgroundColor: const Color(0xFF008080),
+        elevation: 4,
         actions: [
           IconButton(
             icon: const Icon(Icons.info_outline),
             tooltip: "About",
-            onPressed: () {
-              Navigator.pushNamed(context, '/about');
-            },
+            onPressed: () => Navigator.pushNamed(context, '/about'),
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Left Column
-                Expanded(
-                  child: Column(
-                    children: [
-                      buildTextField("Age", ageController),
-                      buildTextField("Annual Income", incomeController),
-                      buildTextField("Experience (yrs)", expController),
-                      buildTextField("Credit Score", creditScoreController),
-                      buildDropdown("Gender", selectedGender, ["Male", "Female", "Other"],
-                          (val) => setState(() => selectedGender = val!)),
-                      buildDropdown("Previous Loan Default", selectedPrevLoan, ["Yes", "No"],
-                          (val) => setState(() => selectedPrevLoan = val!)),
-                    ],
+      body: Center(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Container(
+              width: double.infinity,
+              constraints: const BoxConstraints(maxWidth: 800, minHeight: 500),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Colors.black26,
+                    spreadRadius: 4,
+                    blurRadius: 12,
+                    offset: Offset(0, 4),
                   ),
-                ),
-
-                const SizedBox(width: 16),
-
-                // Right Column
-                Expanded(
-                  child: Column(
-                    children: [
-                      buildTextField("Loan Amount", loanAmountController),
-                      buildTextField("Credit History (yrs)", creditHistoryController),
-                      buildTextField("Interest Rate", interestRateController),
-                      buildDropdown("Education", selectedEducation, ["Associate", "Bachelor", "Doctorate", "High School", "Master"],
-                          (val) => setState(() => selectedEducation = val!)),
-                      buildDropdown("Home Ownership", selectedOwnership, ["MORTGAGE", "OTHER", "OWN", "RENT"],
-                          (val) => setState(() => selectedOwnership = val!)),
-                      buildDropdown("Loan Intent", selectedLoanIntent, ["DEBTCONSOLIDATION", "EDUCATION", "HOMEIMPROVEMENT", "MEDICAL", "PERSONAL", "VENTURE"],
-                          (val) => setState(() => selectedLoanIntent = val!)),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-
-            const SizedBox(height: 24),
-
-            // Predict Button centered
-            isLoading
-                ? const CircularProgressIndicator()
-                : SizedBox(
-                    width: 220,
-                    child: ElevatedButton(
-                      onPressed: _submit,
-                      child: const Text("Predict Loan Eligibility"),
+                ],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  // Header
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: const BoxDecoration(
+                      color: Color(0xFF008080),
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(16),
+                        topRight: Radius.circular(16),
+                      ),
+                    ),
+                    child: const Text(
+                      "Loan Eligibility Form",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 24,
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
-          ],
+
+                  const SizedBox(height: 20),
+
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal, // enable horizontal scrolling
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Left Column
+                          SizedBox(
+                            width: 300, // min width for left column
+                            child: Column(
+                              children: [
+                                buildTextField("Age", ageController),
+                                buildTextField("Monthly Income", incomeController),
+                                buildTextField("Experience (yrs)", expController),
+                                buildTextField("Credit Score", creditScoreController),
+                                buildDropdown("Gender", selectedGender, ["Male", "Female", "Other"],
+                                    (val) => setState(() => selectedGender = val!)),
+                                buildDropdown(
+                                    "Previous Loan Default", selectedPrevLoan, ["Yes", "No"],
+                                    (val) => setState(() => selectedPrevLoan = val!)),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          // Right Column
+                          SizedBox(
+                            width: 300, // min width for right column
+                            child: Column(
+                              children: [
+                                buildTextField("Loan Amount", loanAmountController),
+                                buildTextField("Credit History (yrs)", creditHistoryController),
+                                buildTextField("Interest Rate", interestRateController),
+                                buildDropdown("Education", selectedEducation,
+                                    ["Associate", "Bachelor", "Doctorate", "High School", "Master"],
+                                    (val) => setState(() => selectedEducation = val!)),
+                                buildDropdown("Home Ownership", selectedOwnership,
+                                    ["MORTGAGE", "OTHER", "OWN", "RENT"],
+                                    (val) => setState(() => selectedOwnership = val!)),
+                                buildDropdown(
+                                    "Loan Intent",
+                                    selectedLoanIntent,
+                                    [
+                                      "DEBTCONSOLIDATION",
+                                      "EDUCATION",
+                                      "HOMEIMPROVEMENT",
+                                      "MEDICAL",
+                                      "PERSONAL",
+                                      "VENTURE"
+                                    ],
+                                    (val) => setState(() => selectedLoanIntent = val!)),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 24),
+
+                  // Button + Loading
+                  Center(
+                    child: isLoading
+                        ? const CircularProgressIndicator(color: Color(0xFF008080))
+                        : SizedBox(
+                            width: 220,
+                            child: ElevatedButton(
+                              onPressed: _submit,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFFE69900),
+                                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8)),
+                              ),
+                              child: const Text("Predict Loan Eligibility"),
+                            ),
+                          ),
+                  ),
+                  const SizedBox(height: 16),
+                ],
+              ),
+            ),
+          ),
         ),
       ),
     );

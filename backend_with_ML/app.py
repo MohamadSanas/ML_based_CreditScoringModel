@@ -22,19 +22,21 @@ def predict_loan_status():
         data = request.get_json()
         
         input_df = input_dataFrame(
-        age=data['person_age'],
-        gender=data['person_gender'],
-        income=data['person_income'],
-        exp=data['person_emp_exp'],
-        credit_scr=data['credit_score'],
-        prev_loan=data['previous_loan_defaults_on_file'],
-        education=data['education'],
-        home_ownrship=data['home_ownership'],
-        loan_intent=data['loan_intent'],
-        loan_amnt=data['loan_amnt'],
-        crd_hist=data['credit_history_length'],
-        int_rate=data['loan_interest_rate']
+            age=data['person_age'],
+            gender=data['person_gender'],
+            income=data['person_income'],
+            exp=data['person_emp_exp'],
+            credit_scr=data['credit_score'],
+            prev_loan=data['previous_loan_defaults_on_file'],
+            education=data['education'],
+            home_ownership=data['home_ownership'],  
+            loan_intent=data['loan_intent'],
+            loan_amnt=data['loan_amnt'],
+            crd_hist=data['credit_history_length'],
+            int_rate=data['loan_interest_rate']
         )
+        
+
         
         pred = loan_status_model.predict(input_df)[0]
         
@@ -58,7 +60,8 @@ def predict_loan_status():
         })
     
     except Exception as e:
-        return e
+        return jsonify({"error": str(e)}), 500
+
     
     
     

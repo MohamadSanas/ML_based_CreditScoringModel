@@ -11,6 +11,7 @@ dependencies:
   flutter:
     sdk: flutter
   url_launcher: ^6.3.2
+  font_awesome_flutter: ^10.4.0
 
   cupertino_icons: ^1.0.8
   http: ^1.2.2
@@ -21,6 +22,12 @@ dev_dependencies:
   flutter_lints: ^6.0.0
 
 flutter:
+
+
+  assets:
+    - assets/images/my_photo.jpg
+
+  
   uses-material-design: true
   # Uncomment and add your assets here:
   # assets:

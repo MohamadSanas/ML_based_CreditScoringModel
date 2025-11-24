@@ -5,8 +5,7 @@ class ResultScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final result =
-        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>? ?? {};
+    final result =ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>? ?? {};
 
     final loanStatus = result['loan_status']?.toString() ?? "Unknown";
 

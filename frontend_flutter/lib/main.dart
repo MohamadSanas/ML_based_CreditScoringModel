@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 
-// Importing your screen files
+
 import 'screens/home_screen.dart';
 import 'screens/form_screen.dart';
 import 'screens/result_screen.dart';
-import 'screens/about_page.dart'; // 👈 add About page if you created it
+import 'screens/about_page.dart'; 
+
+
 
 void main() {
   runApp(const MyApp());
@@ -16,7 +18,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false, // hides “Debug” banner
+      debugShowCheckedModeBanner: false,
       title: 'ML-Based Credit Scoring App',
       theme: ThemeData(
         primarySwatch: Colors.deepPurple,
