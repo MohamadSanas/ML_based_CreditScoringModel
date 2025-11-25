@@ -36,6 +36,7 @@ def predict_loan_status():
             int_rate=data['loan_interest_rate']
         )
         
+        print("Input DataFrame for prediction:\n", input_df)
 
         
         pred = loan_status_model.predict(input_df)[0]
