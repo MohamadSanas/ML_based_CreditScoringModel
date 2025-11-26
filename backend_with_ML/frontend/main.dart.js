@@ -25682,7 +25682,7 @@ if(c===r-q)return q
 r=B.c.jd(a,b,r+1)}return null},
 WC(a){var s=0,r=A.P(t.a),q,p,o,n
 var $async$WC=A.L(function(b,c){if(b===1)return A.M(c,r)
-for(;;)switch(s){case 0:o=A.eW("http://127.0.0.1:5000/predict",0,null)
+for(;;)switch(s){case 0:o=A.eW("https://ml-based-creditscoringmodel.onrender.com/predict",0,null)
 n=t.N
 n=A.ap(["Content-Type","application/json"],n,n)
 s=3
