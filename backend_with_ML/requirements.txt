@@ -1,0 +1,9 @@
+Flask==3.1.0
+flask-cors==6.0.1
+numpy==2.2.4
+pandas==2.2.3
+scikit-learn==1.7.2
+imbalanced-learn==0.14.0
+xgboost==3.0.5
+shap==0.48.0
+joblib==1.5.2
