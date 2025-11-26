@@ -37,7 +37,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/form': (context) => const FormScreen(),
         '/result': (context) => const ResultScreen(),
-        '/about': (context) => const AboutPage(), // 👈 optional route
+        '/about': (context) => const AboutPage(), 
       },
     );
   }
