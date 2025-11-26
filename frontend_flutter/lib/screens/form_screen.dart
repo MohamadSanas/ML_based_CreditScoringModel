@@ -10,20 +10,20 @@ class FormScreen extends StatefulWidget {
 
 class _FormScreenState extends State<FormScreen> {
   // Controllers
-  final TextEditingController ageController = TextEditingController();
+  // ignore: non_constant_identifier_names
+  final TextEditingController Dependent = TextEditingController();
   final TextEditingController incomeController = TextEditingController();
-  final TextEditingController expController = TextEditingController();
+  final TextEditingController loanTerm = TextEditingController();
   final TextEditingController creditScoreController = TextEditingController();
   final TextEditingController loanAmountController = TextEditingController();
-  final TextEditingController creditHistoryController = TextEditingController();
-  final TextEditingController interestRateController = TextEditingController();
-
+  final TextEditingController bankAssets = TextEditingController();
+  final TextEditingController residentialAssets = TextEditingController();
+  final TextEditingController commercialAssets = TextEditingController();
   // Dropdowns
-  String selectedGender = "Male";
-  String selectedPrevLoan = "No";
-  String selectedEducation = "Bachelor";
-  String selectedOwnership = "RENT";
-  String selectedLoanIntent = "PERSONAL";
+  String selectedEducation = "Yes";
+  String selectedEmployment = "Employed";
+  
+
 
   bool isLoading = false;
 
@@ -31,18 +31,16 @@ class _FormScreenState extends State<FormScreen> {
   setState(() => isLoading = true);
 
   final inputData = {
-        "person_age": double.tryParse(ageController.text) ?? 0,
-        "person_gender": selectedGender.trim(), // send exact string
+        "Dependent": double.tryParse(Dependent.text) ?? 0,
+        "Education": selectedEducation.trim(), 
         "person_income": double.tryParse(incomeController.text) ?? 0,
-        "person_emp_exp": double.tryParse(expController.text) ?? 0,
+        "Loan_term": double.tryParse(loanTerm.text) ?? 0,
         "credit_score": double.tryParse(creditScoreController.text) ?? 0,
-        "previous_loan_defaults_on_file": selectedPrevLoan, // "Yes" or "No"
-        "education": selectedEducation.trim(),
-        "home_ownership": selectedOwnership.trim(),
-        "loan_intent": selectedLoanIntent.trim(),
+        "Employment": selectedEmployment, 
         "loan_amnt": double.tryParse(loanAmountController.text) ?? 0,
-        "credit_history_length": double.tryParse(creditHistoryController.text) ?? 0,
-        "loan_interest_rate": double.tryParse(interestRateController.text) ?? 0,
+        "bankAssets": double.tryParse(bankAssets.text) ?? 0,
+        "residential_assets": double.tryParse(residentialAssets.text) ?? 0,
+        "commercial_assets": double.tryParse(commercialAssets.text) ?? 0,
       };
 
       try {
@@ -115,7 +113,11 @@ class _FormScreenState extends State<FormScreen> {
             padding: const EdgeInsets.all(16),
             child: Container(
               width: double.infinity,
-              constraints: const BoxConstraints(maxWidth: 800, minHeight: 500),
+              constraints: const BoxConstraints(
+                maxWidth: 800, 
+                minHeight: 500
+                ),
+
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(16),
@@ -166,15 +168,16 @@ class _FormScreenState extends State<FormScreen> {
                             width: 300, // min width for left column
                             child: Column(
                               children: [
-                                buildTextField("Age", ageController),
-                                buildTextField("Monthly Income", incomeController),
-                                buildTextField("Experience (yrs)", expController),
+                                buildTextField("No of Dependent", Dependent),
+                                buildTextField("Annual Income", incomeController),
+                                buildTextField("Loan Term", loanTerm),
                                 buildTextField("Credit Score", creditScoreController),
-                                buildDropdown("Gender", selectedGender, ["Male", "Female", "Other"],
-                                    (val) => setState(() => selectedGender = val!)),
+                                buildTextField("Commercial Assets", commercialAssets),
+                                buildDropdown("Graduated ?", selectedEducation, ["Yes", "No"],
+                                    (val) => setState(() => selectedEducation = val!)),
                                 buildDropdown(
-                                    "Previous Loan Default", selectedPrevLoan, ["Yes", "No"],
-                                    (val) => setState(() => selectedPrevLoan = val!)),
+                                    "Employment status", selectedEmployment, ["Employed", "Unemployed"],
+                                    (val) => setState(() => selectedEmployment = val!)),
                               ],
                             ),
                           ),
@@ -185,26 +188,8 @@ class _FormScreenState extends State<FormScreen> {
                             child: Column(
                               children: [
                                 buildTextField("Loan Amount", loanAmountController),
-                                buildTextField("Credit History (yrs)", creditHistoryController),
-                                buildTextField("Interest Rate", interestRateController),
-                                buildDropdown("Education", selectedEducation,
-                                    ["Associate", "Bachelor", "Doctorate", "High School", "Master"],
-                                    (val) => setState(() => selectedEducation = val!)),
-                                buildDropdown("Home Ownership", selectedOwnership,
-                                    ["MORTGAGE", "OTHER", "OWN", "RENT"],
-                                    (val) => setState(() => selectedOwnership = val!)),
-                                buildDropdown(
-                                    "Loan Intent",
-                                    selectedLoanIntent,
-                                    [
-                                      "DEBTCONSOLIDATION",
-                                      "EDUCATION",
-                                      "HOMEIMPROVEMENT",
-                                      "MEDICAL",
-                                      "PERSONAL",
-                                      "VENTURE"
-                                    ],
-                                    (val) => setState(() => selectedLoanIntent = val!)),
+                                buildTextField("Bank Assets", bankAssets),
+                                buildTextField("Residential Assets", residentialAssets),                              
                               ],
                             ),
                           ),

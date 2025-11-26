@@ -5,7 +5,7 @@ import pandas as pd
 import numpy as np
 
 # 1. Load preprocessed data
-df = load_data(filepath="data/loan_data.csv")
+df = load_data(filepath="data/loan_approval_dataset.csv")
 
 
 """

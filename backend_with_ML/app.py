@@ -1,7 +1,7 @@
 from flask import Flask,request,jsonify
 from flask_cors import CORS
-from src.new_data_to_df import input_dataFrame
 import numpy as np
+from src.new_data_to_df import input_dataFrame
 from joblib import load
 import pandas as pd
 import shap
@@ -20,21 +20,23 @@ def home():
 def predict_loan_status():
     try:
         data = request.get_json()
+        print("Received data for prediction:", data)
+        
+        
         
         input_df = input_dataFrame(
-            age=data['person_age'],
-            gender=data['person_gender'],
+            dependent=data['Dependent'],
+            Education=data['Education'],
             income=data['person_income'],
-            exp=data['person_emp_exp'],
-            credit_scr=data['credit_score'],
-            prev_loan=data['previous_loan_defaults_on_file'],
-            education=data['education'],
-            home_ownership=data['home_ownership'],  
-            loan_intent=data['loan_intent'],
-            loan_amnt=data['loan_amnt'],
-            crd_hist=data['credit_history_length'],
-            int_rate=data['loan_interest_rate']
+            Loan_term=data['Loan_term'],
+            credit_scr=data['credit_score'],        # match parameter name
+            Employment=data['Employment'],
+            loan_amount=data['loan_amnt'],
+            bankAssets=data['bankAssets'],          # match parameter name
+            residentialAssets=data['residential_assets'],  
+            commercialAssets=data['commercial_assets']    
         )
+
         
         print("Input DataFrame for prediction:\n", input_df)
 
@@ -59,10 +61,10 @@ def predict_loan_status():
         "loan_status": result,
         "top_features": top_features
         })
-    
+
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-
+        
     
     
     

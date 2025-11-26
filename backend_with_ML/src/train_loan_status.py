@@ -7,10 +7,12 @@ from xgboost import XGBClassifier
 from imblearn.over_sampling import SMOTE
 import seaborn as sns
 import matplotlib.pyplot as plt
-from joblib import dump, load
+from joblib import dump
+import os
 
-
+# -------------------------------
 # Load preprocessed data
+# -------------------------------
 df = pd.read_csv("data/preprocessed_data.csv")
 
 # Separate features and target
@@ -26,18 +28,19 @@ X_train, X_test, Y_train, Y_test = train_test_split(
 sm = SMOTE(random_state=42)
 X_res, Y_res = sm.fit_resample(X_train, Y_train)
 
-print("Before SMOTE:", Y_train.value_counts())
-print("After SMOTE:", pd.Series(Y_res).value_counts())
+print("Before SMOTE:\n", Y_train.value_counts())
+print("After SMOTE:\n", pd.Series(Y_res).value_counts())
 
-# XGBoost classifier
+# -------------------------------
+# XGBoost Classifier
+# -------------------------------
 xgb = XGBClassifier(
     objective='binary:logistic',
     eval_metric='logloss',
-    use_label_encoder=False,
     random_state=42
 )
 
-#Hyperparameter tuning (RandomizedSearchCV)
+# Hyperparameter tuning using RandomizedSearchCV
 param_grid = {
     'n_estimators': [100, 200, 300],
     'max_depth': [3, 5, 7, 10],
@@ -61,17 +64,27 @@ search = RandomizedSearchCV(
 search.fit(X_res, Y_res)
 best_model = search.best_estimator_
 
+# -------------------------------
 # Predict and evaluate
+# -------------------------------
 y_pred = best_model.predict(X_test)
 
 print("Accuracy:", accuracy_score(Y_test, y_pred))
 print("Confusion Matrix:\n", confusion_matrix(Y_test, y_pred))
 print("Classification Report:\n", classification_report(Y_test, y_pred))
 
-# Plot feature importance
+# -------------------------------
+# Plot top 15 feature importances
+# -------------------------------
 importances = pd.Series(best_model.feature_importances_, index=X.columns)
 importances.nlargest(15).plot(kind='barh', figsize=(10,6))
 plt.title('Top 15 Feature Importances (XGBoost)')
 plt.show()
 
-dump(best_model, 'model/credit_eligibility_model.joblib')
+# -------------------------------
+# Save model
+# -------------------------------
+model_dir = "model"
+os.makedirs(model_dir, exist_ok=True)
+dump(best_model, os.path.join(model_dir, 'credit_eligibility_model.joblib'))
+print("Model saved to 'model/credit_eligibility_model.joblib'")

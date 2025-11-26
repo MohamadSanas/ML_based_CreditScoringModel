@@ -6,6 +6,9 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 
 
+# ----------------------------
+# Outlier handling functions
+# ----------------------------
 def find_outliers(df, column):
     """Count number of outliers in a column using IQR method."""
     Q1 = df[column].quantile(0.25)
@@ -20,110 +23,93 @@ def cap_outliers(df, column):
     Q1 = df[column].quantile(0.25)
     Q3 = df[column].quantile(0.75)
     IQR = Q3 - Q1
-
     lower_bound = Q1 - 1.5 * IQR
     upper_bound = Q3 + 1.5 * IQR
-
     df[column] = np.where(df[column] < lower_bound, lower_bound, df[column])
     df[column] = np.where(df[column] > upper_bound, upper_bound, df[column])
     return df
 
-# check outliers for numeric11al columns after capping
-def find_outliers_count(df):
-    numaric_cols= df.select_dtypes(include=['int64', 'float64'])
-    count=0
-    for col in numaric_cols:
-        if find_outliers(df, col) !=0:
-            count=+1
-            return col,find_outliers(df, col)
-    if count==0:
-        return "No outlters found"
 
-
+# ----------------------------
+# Preprocessing function
+# ----------------------------
 def preprocess(df):
-    """
-    Clean and transform raw dataframe into model-ready format.
-    """
+    """Clean and transform raw dataframe into model-ready format."""
 
-    # --- Feature Engineering ---
+    # Strip column names
+    df.columns = df.columns.str.strip()
 
-    # Drop irrelevant columns
-    
+    # Drop irrelevant columns safely
+    if "luxury_assets_value" in df.columns:
+        df = df.drop(columns=["luxury_assets_value"])
 
-    # Log transformation for income
-    for col in ["loan_amnt","cb_person_cred_hist_length","loan_int_rate"]:
-        df[col + '_log'] = np.log1p(df[col])
-        df.drop(columns=[col], inplace=True)
+    # Log transformation for skewed numeric columns
 
-    
-
-    # --- Outlier capping (can be change) ---
-    
-    for col in ["person_age","person_income","person_emp_exp","loan_amnt_log","credit_score","cb_person_cred_hist_length_log"]:
+    # Cap outliers in all numeric columns
+    numeric_cols = df.select_dtypes(include=["int64", "float64"]).columns
+    for col in numeric_cols:
         df = cap_outliers(df, col)
-        
-    df['loan_percent_income_log'] = np.log1p(df['loan_percent_income'])
-    
-    df['loan_percent_income_bucket'] = pd.cut(
-    df['loan_percent_income'], 
-    bins=[0, 10, 20, 30, 50, 100], 
-    labels=['Very Low','Low','Medium','High','Very High']
+
+    # Correlation matrix
+    corr_matrix = df[numeric_cols].corr()
+    plt.figure(figsize=(12, 10))
+    sns.heatmap(
+        corr_matrix,
+        annot=True,
+        fmt=".2f",
+        cmap="coolwarm",
+        linewidths=0.5,
+        linecolor="black",
+        cbar=True,
     )
-    df=df.drop(columns=['loan_percent_income'], inplace=True)
-
-    df = pd.get_dummies(df, columns=['loan_percent_income_bucket'], drop_first=True)
-
-    df=df.dropna(inplace=True)
-    """
-    
-    numaric_cols= df.select_dtypes(include=['int64', 'float64'])
-    coo_matrix= numaric_cols.corr()
-    plt.figure(figsize=(12,10))
-    sns.heatmap(coo_matrix, annot=True, fmt=".2f", cmap='coolwarm', linewidths=0.5, linecolor='black', cbar=True)
-    plt.title('Correlation Matrix(after preprocess);')
+    plt.title("Correlation Matrix (After Preprocessing)")
     plt.show()
-    
-    
-    
-    # Correlation Matrix split into two stages for better readability
 
-    # Stage 1: print first half of the columns
+    # Print correlation in two parts for readability
+    mid = len(corr_matrix.columns) // 2
     print("=== Correlation Matrix Part 1 ===")
-    print(coo_matrix.iloc[:, :len(coo_matrix)//2])
-
-    # Stage 2: print second half of the columns
+    print(corr_matrix.iloc[:, :mid])
     print("\n=== Correlation Matrix Part 2 ===")
-    print(coo_matrix.iloc[:, len(coo_matrix)//2:])
-    """
-    
+    print(corr_matrix.iloc[:, mid:])
+
     return df
 
 
-
-
+# ----------------------------
+# Load and preprocess pipeline
+# ----------------------------
 def load_and_preprocess(path):
-    """
-    Load dataset and apply preprocessing pipeline.
-    """
-    df = load_data(path)
-    df_new= eda_process(df)
-    df_preprocessed = preprocess(df_new)
-    print("Dataset shape after full preprocessing:", df_preprocessed.shape)
-    
-    df_preprocessed.dropna(inplace=True)
-    df_preprocessed.to_csv("data/preprocessed_data.csv", index=False)
-    print("Preprocessed data saved to '../data/preprocessed_data.csv'.")
-    
+    """Load dataset, apply EDA, preprocess, and save to CSV."""
 
-    
-    numaric_cols = df_preprocessed.select_dtypes(include=['int64', 'float64'])
-    for col in numaric_cols.columns:
-        outlier_count = find_outliers(df, col)
+    # Load and encode dataset
+    df = load_data(path)
+
+    # Apply any EDA process (if needed)
+    df = eda_process(df)
+
+    # Preprocess dataset
+    df_preprocessed = preprocess(df)
+
+    # Drop remaining NaNs if any
+    df_preprocessed.dropna(inplace=True)
+
+    # Save to CSV
+    df_preprocessed.to_csv("data/preprocessed_data.csv", index=False)
+    print("Preprocessed data saved to 'data/preprocessed_data.csv'.")
+    print("Dataset shape after preprocessing:", df_preprocessed.shape)
+
+    # Print outlier counts after preprocessing
+    numeric_cols = df_preprocessed.select_dtypes(include=["int64", "float64"]).columns
+    for col in numeric_cols:
+        outlier_count = find_outliers(df_preprocessed, col)
         if outlier_count != 0:
-            print(col, outlier_count)
-    
+            print(f"Outliers in {col}: {outlier_count}")
+
     return df_preprocessed
 
 
+# ----------------------------
+# Main
+# ----------------------------
 if __name__ == "__main__":
-    df_preprocessed = load_and_preprocess("data/loan_data.csv")
+    df_preprocessed = load_and_preprocess("data/loan_approval_dataset.csv")

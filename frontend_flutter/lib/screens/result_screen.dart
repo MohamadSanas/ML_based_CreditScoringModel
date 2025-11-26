@@ -5,6 +5,7 @@ class ResultScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Retrieve result from arguments, if passed
     final result =ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>? ?? {};
 
     final loanStatus = result['loan_status']?.toString() ?? "Unknown";
@@ -13,50 +14,123 @@ class ResultScreen extends StatelessWidget {
         ? result['top_features'] as List
         : [];
 
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Prediction Result"),
+        title: const Text("Result"),
+        centerTitle: true,
+        backgroundColor: const Color(0xFF008080),
+        elevation: 4,
         actions: [
           IconButton(
             icon: const Icon(Icons.info_outline),
             tooltip: "About",
-            onPressed: () {
-              Navigator.pushNamed(context, '/about'); // fixed route name
-            },
+            onPressed: () => Navigator.pushNamed(context, '/about'),
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Center(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                "Credit Score Result:",
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+      body: Center(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Container(
+              width: double.infinity,
+              constraints: const BoxConstraints(
+                maxWidth: 600, // like max-w-4xl
+                minHeight: 200,
               ),
-              const SizedBox(height: 20),
-              Text(
-                loanStatus,
-                style: const TextStyle(fontSize: 24, color: Colors.deepPurple),
+
+
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Colors.black26,
+                    spreadRadius: 4,
+                    blurRadius: 12,
+                    offset: Offset(0, 4),
+                  ),
+                ],
+
               ),
-              const SizedBox(height: 30),
-              const Text(
-                "Top Features Influencing Decision:",
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  // Header
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: const BoxDecoration(
+                      color: Color(0xFF008080),
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(16),
+                        topRight: Radius.circular(16),
+                      ),
+                    ),
+
+
+                    child: const Text(
+                      "Loan Eligibility Result",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+
+                  // Result content
+                  Padding(
+                    padding: const EdgeInsets.all(24),
+                    child: Column(
+                      children: [
+                        const Text(
+                        "Credit Score Result:",
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold
+                            ),
+                        ),
+                        const SizedBox(height: 15),
+
+                        Text(
+                          loanStatus,
+                          style: const TextStyle(
+                            fontSize: 24, 
+                            color: Color.fromARGB(255, 0, 0, 0)
+                          ),
+                        ),
+                        const SizedBox(height: 15),
+
+                        ElevatedButton(
+                          onPressed: () {
+                            Navigator.pushNamedAndRemoveUntil(
+                              context, 
+                              '/form', 
+                              (route) => false
+                            );
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFFE69900),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 24, 
+                              vertical: 12
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                          child: const Text("Make Another Prediction",
+                          style: TextStyle(color: Color.fromARGB(255, 0, 0, 0)),),
+
+                        ),
+                      ]
+                    )
+                  ),
+                ],
               ),
-              const SizedBox(height: 10),
-              ...topFeatures.map((feature) {
-                final shapValue = feature['SHAP_value'];
-                final shapText =
-                    (shapValue is num) ? shapValue.toStringAsFixed(3) : shapValue.toString();
-                return Text(
-                  "${feature['Feature']}: $shapText",
-                  style: const TextStyle(fontSize: 16),
-                );
-              }),
-            ],
+            ),
           ),
         ),
       ),
